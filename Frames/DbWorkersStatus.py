@@ -13,14 +13,18 @@ class DbWorkersStatus:
 
         db_w_s = DbWorkerStatus()
         db_w_s.json_decode(json_frame)
-        db_w_s.show()
+        #db_w_s.show()
 
         elem = self.statuses.get(db_w_s.get_pid)
 
-        if elem == None:
+        if elem is None:
             self.statuses[db_w_s.get_pid] = db_w_s
             out_status = True
         else:
+
+            if self.statuses[db_w_s.get_pid].get_status != db_w_s.get_status:
+                out_status = True
+
             self.statuses[db_w_s.get_pid].set_status(db_w_s.get_status)
 
         return out_status

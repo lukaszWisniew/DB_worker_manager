@@ -1,3 +1,5 @@
+from threading import Lock
+
 import redis
 
 from Conf.DBWorkersStatusConfig import DBWorkersStatusConfig
@@ -16,6 +18,16 @@ class Ctx:
         self.__running = False
         self.__redis_conn = None
 
+        self.__lock = Lock()
+
+    @property
+    def main_config(self):
+        return self.__main_config
+
+    @property
+    def redis_config(self):
+        return self.__redis_config
+
     @property
     def redis_conn(self):
         return self.__redis_conn
@@ -26,13 +38,16 @@ class Ctx:
 
     @property
     def running(self):
-        return self.__running
+        with self.__lock:
+            return self.__running
 
     def running_enable(self):
-        self.__running = True
+        with self.__lock:
+            self.__running = True
 
     def running_disable(self):
-        self.__running = False
+        with self.__lock:
+            self.__running = False
 
     def set_db_worker_status(self, db_worker_status):
         return self.__db_workers_status.set_status_json(db_worker_status)
